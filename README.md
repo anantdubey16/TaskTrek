@@ -1,4 +1,4 @@
-# todo
+# TaskTrek
 
 A new Flutter project.
 
