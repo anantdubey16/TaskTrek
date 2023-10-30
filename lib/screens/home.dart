@@ -1,26 +1,12 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:todo/constants/colors.dart';
 import 'package:todo/model/todo.dart';
+import 'package:todo/widgets/app_widgets.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'ToDo App',
-      home: Home(),
-    );
-  }
-}
+// ignore: constant_identifier_names
+enum SelectedScreen { Todo, Expense }
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -31,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  SelectedScreen _currentScreen = SelectedScreen.Todo; // Default to Todo screen
 
   final todosList = ToDo.todoList();
   List<ToDo> _foundToDo = [];
@@ -108,13 +95,12 @@ class _HomeState extends State<Home> {
       elevation: 0,
       leading: IconButton(
         icon: const Icon(
-          Icons.menu, // Use the menu icon for the drawer
+          Icons.menu,
           color: Colors.black,
           size: 30,
         ),
         onPressed: () {
-          _scaffoldKey.currentState
-              ?.openDrawer(); // Open the drawer from the left
+          _scaffoldKey.currentState?.openDrawer();
         },
       ),
       title: const Align(
@@ -124,7 +110,7 @@ class _HomeState extends State<Home> {
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
-            color: Colors.black, // You can change the color to your preference
+            color: Colors.black,
           ),
         ),
       ),
@@ -133,11 +119,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    const bool showUserProfileIcon = true;
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[100],
-      appBar: _buildAppBar(showUserProfileIcon),
+      appBar: _buildAppBar(true),
       drawer: Drawer(
         child: Column(
           children: [
@@ -147,7 +132,7 @@ class _HomeState extends State<Home> {
                 children: const [
                   DrawerHeader(
                     decoration: BoxDecoration(
-                      color: BG, // Change the color to your preference
+                      color: BG,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,37 +187,12 @@ class _HomeState extends State<Home> {
             ),
             child: Column(
               children: [
-                searchBox(),
-                const SizedBox(height: 10,),
-                Row(
-  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  children: [
-    Expanded(
-      child: ElevatedButton(
-        onPressed: () {
-          // Handle Todo's button press
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-        ),
-        child: const Text('Todo\'s'),
-      ),
-    ),
-    const SizedBox(width: 10,),
-    Expanded(
-      child: ElevatedButton(
-        onPressed: () {
-          // Handle Expense Tracker button press
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
-        ),
-        child: const Text('Expense Tracker'),
-      ),
-    ),
-  ],
-),
-
+                const SearchBox(),
+                const SizedBox(
+                  height: 10,
+                ),
+                // if (_currentScreen == SelectedScreen.Todo) const TodoWidget(),
+                // if (_currentScreen == SelectedScreen.Expense) const ExpenseWidget(),
                 Expanded(
                   child: ListView.builder(
                     itemCount: _foundToDo.length,
@@ -251,92 +211,97 @@ class _HomeState extends State<Home> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Row(children: [
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 20,
-                    right: 20,
-                    left: 20,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color.fromARGB(255, 220, 220, 220),
-                        offset: Offset(0.0, 0.0),
-                        blurRadius: 6.0,
-                        spreadRadius: 0.0,
+            child: _currentScreen == SelectedScreen.Todo
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                            bottom: 20,
+                            right: 20,
+                            left: 20,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromARGB(255, 220, 220, 220),
+                                offset: Offset(0.0, 0.0),
+                                blurRadius: 6.0,
+                                spreadRadius: 0.0,
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextField(
+                            controller: _todoController,
+                            decoration: const InputDecoration(
+                              hintText: 'Add a new todo item',
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                          bottom: 20,
+                          right: 20,
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _addToDoItem(_todoController.text);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            minimumSize: const Size(60, 60),
+                            elevation: 10,
+                          ),
+                          child: const Text(
+                            '+',
+                            style: TextStyle(
+                              fontSize: 40,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: TextField(
-                    controller: _todoController,
-                    decoration: const InputDecoration(
-                      hintText: 'Add a new todo item',
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(
-                  bottom: 20,
-                  right: 20,
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    _addToDoItem(_todoController.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    minimumSize: const Size(60, 60),
-                    elevation: 10,
-                  ),
-                  child: const Text(
-                    '+',
-                    style: TextStyle(
-                      fontSize: 40,
-                    ),
-                  ),
-                ),
-              ),
-            ]),
+                  )
+                : Container(),
+          ),
+          const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: 80.0), // Adjust the top padding as needed
+              // child: SearchBox(),
+            ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget searchBox() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: TextField(
-        onChanged: (value) => _runFilter(value),
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.all(0),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Colors.black,
-            size: 20,
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: BG,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.black,
+        currentIndex: _currentScreen == SelectedScreen.Todo ? 0 : 1,
+        onTap: (index) {
+          setState(() {
+            _currentScreen =
+                index == 0 ? SelectedScreen.Todo : SelectedScreen.Expense;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check),
+            label: 'Todo',
           ),
-          prefixIconConstraints: BoxConstraints(
-            maxHeight: 20,
-            minWidth: 25,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.attach_money),
+            label: 'Expense',
           ),
-          border: InputBorder.none,
-          hintText: 'Search',
-          hintStyle: TextStyle(color: Colors.grey),
-        ),
+        ],
       ),
     );
   }

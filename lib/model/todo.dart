@@ -10,9 +10,10 @@ class ToDo {
     required this.todoText,
     this.isDone = false,
   });
-  
+
   static List<ToDo> todoList() {
     return [
+      // Add your initial todo items here if needed
     ];
   }
 }
@@ -29,7 +30,7 @@ class ToDoItem extends StatelessWidget {
     required this.onDeleteItem,
   }) : super(key: key);
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
