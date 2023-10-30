@@ -10,15 +10,9 @@ class ToDo {
     required this.todoText,
     this.isDone = false,
   });
-
+  
   static List<ToDo> todoList() {
     return [
-      // ToDo(id: '01', todoText: 'Morning Exercise', isDone: true),
-      // ToDo(id: '02', todoText: 'Buy Groceries', isDone: true),
-      // ToDo(id: '03', todoText: 'Check Emails'),
-      // ToDo(id: '04', todoText: 'Team Meeting'),
-      // ToDo(id: '05', todoText: 'Work on mobile apps for 2 hours'),
-      // ToDo(id: '06', todoText: 'Dinner with Jenny'),
     ];
   }
 }
@@ -29,26 +23,40 @@ class ToDoItem extends StatelessWidget {
   final Function(String) onDeleteItem;
 
   const ToDoItem({
+    Key? key,
     required this.todo,
     required this.onToDoChanged,
     required this.onDeleteItem,
-  });
+  }) : super(key: key);
 
-  @override
+ @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(todo.todoText ?? ""),
-      leading: Checkbox(
-        value: todo.isDone,
-        onChanged: (value) {
-          onToDoChanged(todo);
-        },
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
       ),
-      trailing: IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () {
-          onDeleteItem(todo.id ?? "");
-        },
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      child: ListTile(
+        title: Text(
+          todo.todoText ?? "",
+          style: TextStyle(
+            decoration:
+                todo.isDone ? TextDecoration.lineThrough : TextDecoration.none,
+          ),
+        ),
+        leading: Checkbox(
+          value: todo.isDone,
+          onChanged: (value) {
+            onToDoChanged(todo);
+          },
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            onDeleteItem(todo.id ?? "");
+          },
+        ),
       ),
     );
   }
