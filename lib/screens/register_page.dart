@@ -48,7 +48,7 @@ class RegisterPage extends StatelessWidget {
                 Navigator.pushReplacementNamed(context, '/home');  // Navigate to home for now
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Blue,
+                backgroundColor: Black,
               ),
               child: const Text('Register'),
             ),
